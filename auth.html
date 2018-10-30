@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title> Авторизация </title>
+    <style>
+        #auth{
+            margin-left:35%;
+            margin-top: 15%;
+            border: 5px solid rgb(0,0,200);
+            width: 30%;
+            height: 200px;
+            
+           
+           
+        }
+        
+        #auth label{
+           display: inline-block;
+           margin-top: 3%;
+           padding-left: 10px;
+        }
+        
+        #login{
+            margin-left: 10px;
+        }
+        
+        #password{
+            margin-left: 40px;
+        }
+        
+        #forPassword{
+         padding-left: 40px; 
+        }
+        
+        #loginButton{
+            display: block;
+            position: relative;
+            top:5%;
+            left:3%;
+            
+        }
+        
+        #loginButton a{
+             text-decoration:none;
+            
+        }
+        
+    </style>
+    
+    <script src="/socket.io/socket.io.js"> </script>
+    <script src='http://code.jquery.com/jquery-3.3.1.min.js'> </script>
+    <script>
+    $(document).ready(function(){
+         var socket = io();
+        
+        $('#loginButton').click(function(){
+        var login = $('#login').val();
+        var password = $('#password').val();
+        socket.emit('authorization',{login:login,password:password});
+          
+        });
+        
+        
+    });
+   
+    
+    </script>
+    </head>
+<body>
+    <form id="auth">
+    <label for="login" id="forLogin">Введите Ваш логин : <input id="login" name="login" type="text" width="200px"></label>
+        
+    <label for="password" id="forPassword">Введите пароль :<input id="password" name="password" type="text" width="200px"></label> 
+        
+        <button id="loginButton">   <a href="http://localhost:3000/test"> Войти </a></button>
+        
+      
+    </form>
+    
+    
+    </body>
+
+</html>

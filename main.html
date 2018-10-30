@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Мессенджер</title>
+    <link href="https://fonts.googleapis.com/css?family=Charmonman|Crete+Round" rel="stylesheet">
+	<style>
+        html,body{
+            padding:0;
+            margin:0;
+        }
+        body{
+           background: url(images/4k-wallpaper-android-wallpaper-astro-1146134.jpg) no-repeat center center fixed;
+    
+            background-size: cover;
+           
+            
+        
+        }
+        
+        
+        :root{
+            --panel-color:#002f88;
+        }
+        
+        #messageArea{
+          width:65%;
+            background-color: white;
+            position: absolute;
+            right: 2%;
+            top:7%;
+            height: 91.5%;
+            background-color: rgba(0,0,0,0.4);
+        }
+        
+        #topPanel{
+            position: absolute;
+            width: 100%;
+            height:7%;
+            top:0px;
+            background-color: var(--panel-color);
+        }
+        
+        #rightPanel{
+            position: absolute;
+            width: 2%;
+            height:100%;
+            top:0%;
+            right: 0%; 
+            background-color: var(--panel-color);
+        }
+        
+        #leftPanel{
+            position: absolute;
+            width: 2%;
+            height:100%;
+            top:0%;
+            left: 0%; 
+            background-color: var(--panel-color);
+        }
+        
+        #bottomPanel{
+            position: absolute;
+            width:100%;
+            height:1.5%;
+            bottom:0%;
+            background-color: var(--panel-color);
+            overflow: hidden;
+        }
+        
+        #messages{
+            position: absolute;
+            background-color: rgba(255,255,255,0.8);
+            top:2.5%;
+            width:95%;
+            margin-left: 2.5%;
+            height: 86%;
+            overflow-y: scroll;
+            
+            
+        }
+        
+        #textMessage{
+            position: absolute;
+            width: 76%;
+            border-radius: 5px;
+            height: 3%;
+            left: 2.5%;
+            top: 95%;
+            font-family: 'Charmonman', cursive;
+        }
+        
+        #sendButton{
+           background-color:#688dff;
+            position: absolute;
+            top:94%;
+            width:12%;
+            left:82%;
+            height: 3.75%;
+            overflow: hidden;
+            vertical-align: center;
+            padding-left: 1%;
+            padding-right: 1%;
+            padding-bottom: 1%;
+            border: 1px solid white;
+            border-radius: 10px;
+            color:white;
+            font-family: 'Charmonman', cursive;
+            text-decoration-line: none;
+            text-align: center;
+            
+        }
+
+        
+        
+        #userName{
+            position:absolute;
+            background-color: white;
+            top:50%;
+            left:10%;
+        }
+        
+        .forMessage{
+            position: relative;
+            font-family: 'Crete Round', serif;
+            word-wrap:break-word;
+            background-color: rgb(155, 155, 184);
+            color:rgb(76, 26, 105);
+            width: 100%;
+            margin-left: -3%;
+            margin-top: 10px;
+           list-style-type: none;
+           padding-left: 2%;
+           
+            
+        }
+
+        #messageTime{
+            position: absolute;
+            right:2%;
+            bottom:1%;
+            color:#002f88;
+            font-size: 12px;
+        }
+        
+
+        #messages::-webkit-scrollbar { width: 0; }
+ 
+
+        #messages { -ms-overflow-style: none; }
+  
+ 
+        #messages { overflow: -moz-scrollbars-none; }
+
+        #labelForUserName{
+            position: absolute;
+            left:13%;
+            top:45%;
+            color:white;
+        }
+
+        #startSpeaking{
+            position: absolute;
+            top:55%;
+            left:13%;
+        }
+
+        #userNameDesign{
+            color:#002f88;
+            font-weight: bold;
+        }
+
+        
+    </style>
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js"> </script>
+    <script src='/socket.io/socket.io.js'></script>
+    <script>
+    window.onload = function() {
+        var socket = io();
+        var sendButton = document.querySelector('#sendButton');
+        var textMessage = document.querySelector('#textMessage');
+        var userInfo = document.querySelector('#userName');
+        var messageList = document.querySelector('#messageList');//область сообщений
+        var date = new Date();
+        var liMargin = 10; //расстояние между сообщениями
+        var totalSum = 0;
+        var isSpeakingStart = false;
+        var speakingButton = document.querySelector('#startSpeaking');
+        var labelForUserName = document.querySelector('#labelForUserName');
+
+
+        function prettyTime(number) {
+    
+           if(number<10)
+           return "0"+number;
+          return number;
+           
+          }
+
+         speakingButton.onclick = function() {
+             if(userInfo.value!='')
+             sendButton.removeAttribute('hidden');
+             textMessage.removeAttribute('hidden');
+             speakingButton.hidden = true;
+             isSpeakingStart = true;
+             labelForUserName.innerHTML = "Добро пожаловать в общий чат";
+             labelForUserName.style.left = '8%';
+
+         }
+        
+     
+        
+        sendButton.onclick = function() {
+            socket.emit('user message',{message:textMessage.value,user:userInfo.value});
+            textMessage.value = "";
+            return false;
+        };//конец click
+        
+        
+        socket.on('my message',function(msg){
+            
+            
+                if(msg.message!=''){
+                var user = msg.user;
+                 var liMessage = document.createElement('li');
+          liMessage.className = 'forMessage';
+                liMessage.innerHTML = `<span id="userNameDesign">${msg.user}</span>: ${msg.message} <span id="messageTime">${prettyTime(date.getHours())}:${prettyTime(date.getMinutes())} </span>`;
+                messageList.appendChild(liMessage);
+              
+
+               
+      var heightOfMessageList  =  $('#messages').height();
+        var lastLi = $('li').last();
+
+            totalSum+=liMargin+(parseFloat(lastLi.height()));
+            
+    
+            if(totalSum> Number(parseFloat(heightOfMessageList)))
+            $('#messages').scrollTop($('#messages').prop('scrollHeight'));  
+                   
+
+
+                }
+                
+        });
+        
+
+
+    };
+        
+      
+    </script>
+</head>
+<body>
+    
+    <label for="userName" id="labelForUserName"> Введите ваше имя </label><input type="text" name="userName" id="userName"> 
+   <button id="startSpeaking"> Начать общение </button>
+
+	<div id="topPanel">
+        
+    </div>
+    
+    <div id="rightPanel">
+        
+    </div>
+    
+    <div id="bottomPanel">
+        
+    </div>
+    
+        
+    <div id="leftPanel">
+        
+    </div>
+    
+    
+    <div id="messageArea">
+        <div id="messages">
+            
+            <ul id="messageList">
+                
+            </ul>
+        </div>
+        
+        <input type="text" placeholder="Введите текст сообщения" id="textMessage" hidden>
+        <a href="#" id="sendButton" hidden> <span id="textOnButton">Отправить</span> </a> 
+        
+    </div>
+    
+    
+  
+</body>
+</html>
