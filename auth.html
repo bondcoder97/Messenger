@@ -5,76 +5,142 @@
     <title> Авторизация </title>
     <style>
         #auth{
+            position: relative;
             margin-left:35%;
             margin-top: 15%;
             border: 5px solid rgb(0,0,200);
             width: 30%;
             height: 200px;
+            background-color: rgba(0,0,0,0.4);
+            color: white;
+            border-radius: 5px;
+
             
            
            
         }
-        
-        #auth label{
-           display: inline-block;
-           margin-top: 3%;
-           padding-left: 10px;
-        }
+
         
         #login{
-            margin-left: 10px;
+            position: absolute;
+            width: 50%;
+            left:35%;
+        }
+
+        #forLogin{
+           position: relative;
+           left:5%;
+           top:8%;
+           display: block;
+           
+
         }
         
         #password{
-            margin-left: 40px;
+            position: absolute;
+            width: 50%;
+            left:35%;
         }
         
         #forPassword{
-         padding-left: 40px; 
-        }
-        
-        #loginButton{
-            display: block;
             position: relative;
-            top:5%;
-            left:3%;
-            
+           left:5%;
+           top:15%;
+           display: block;
+           
+          
         }
         
-        #loginButton a{
-             text-decoration:none;
+        .buttons{
+            
+            position: absolute;
+            text-decoration:none;
+            color: white;
+            border: 2px solid rgb(0,0,200);
+            background-color: rgb(0,0,200);
+            text-align: center;
+            border-radius: 10px;
             
         }
+        #loginButton{
+            top:40%;
+            left:65%;
+            width: 30%; 
+        }
+      
+        #logupButton{
+            top:40%;
+            width:35%;
+            left:25%;
+        }
+
+        #errorParagraph{
+            color: red;
+            position: absolute;
+            top: 50%;
+            left:25%;
+        }
+
+        
+
         
     </style>
+      <link href="css/style.css" rel="stylesheet">
     
     <script src="/socket.io/socket.io.js"> </script>
     <script src='http://code.jquery.com/jquery-3.3.1.min.js'> </script>
     <script>
-    $(document).ready(function(){
-         var socket = io();
-        
-        $('#loginButton').click(function(){
-        var login = $('#login').val();
-        var password = $('#password').val();
-        socket.emit('authorization',{login:login,password:password});
-          
-        });
-        
-        
-    });
+       $(document).ready(function(){
+           var socket = io();
+           var loginButton = document.querySelector('#loginButton');
+           var logupButton = document.querySelector('#logupButton');
+           var password = document.querySelector('#password');
+           var login = document.querySelector('#login');
+
+           loginButton.onclick = function() {
+
+             
+            if(login.value != '' && password.value!=''){
+             socket.emit('auth',{login:login.value,password:password.value});
+            }
+              
+            if(loginButton.getAttribute('href')=='#')
+            return false;
+
+           }
+           
+           socket.on('status query',function(arg){
+               
+                if(arg) {
+                    var errorMessage = document.querySelector('#errorParagraph');
+                    errorMessage.innerHTML = "Неправильный логин или пароль";
+                    
+                }
+                else
+                {
+                    loginButton.setAttribute('href','http://localhost:3000/main');
+                    loginButton.click();
+                }
+           });
+
+
+           
+       });//конец ready
    
     
     </script>
     </head>
 <body>
     <form id="auth">
-    <label for="login" id="forLogin">Введите Ваш логин : <input id="login" name="login" type="text" width="200px"></label>
+    <label for="login" id="forLogin"><span class="labelText">Введите логин :</span><input id="login" name="login" type="text" width="200px"></label>
         
-    <label for="password" id="forPassword">Введите пароль :<input id="password" name="password" type="text" width="200px"></label> 
+    <label for="password" id="forPassword"><span class="labelText">Введите пароль :</span><input id="password" name="password" type="password" width="200px"></label> 
         
-        <button id="loginButton">   <a href="http://localhost:3000/test"> Войти </a></button>
+        <a id="loginButton" class="buttons" href='#'>  Войти </a>
         
+        <a id="logupButton" class="buttons" href='#'>  Регистрация </a>
+
+        <p id="errorParagraph"> </p>
       
     </form>
     
