@@ -15,7 +15,7 @@ var conn = mysql.createConnection({
     database: 'andrey',
     host: "localhost",
     user: "root",
-    password: "vika9",
+    password: "password",
     insecureAuth : true
   });
 
